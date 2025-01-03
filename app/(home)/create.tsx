@@ -39,7 +39,7 @@ export default function create() {
     }
 
     const createPostF = async () => {
-
+        
     }
   return (
     <View style={styles.constainer}>
