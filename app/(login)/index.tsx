@@ -3,6 +3,9 @@ import React, { useState } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
+import { useExpoRouter } from 'expo-router/build/global-state/router-store';
 export default function index() {
     const firebaseConfig = {
         apiKey: "AIzaSyBc24lPTje7pq_twb5Ggf2o4fyexu86nGw",
@@ -13,11 +16,47 @@ export default function index() {
         appId: "1:362433250393:web:9de83259191b1f947f5d48",
         measurementId: "G-BQZQMPPWSX"
       };
+    firebase.initializeApp(firebaseConfig)
     const [email,setEmail] = useState("");
     const [password, setPassword] = useState("");
-
+    const router = useExpoRouter();
     const submitClick = async () => {
-        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!emailRegex.test(email)){
+            alert("Email is invalid");
+        }
+        if(password.length <= 5) 
+            alert("Minimum lenght of password should be 6");
+
+        try {
+            const respnse = await firebase.auth().signInWithEmailAndPassword(email,password);
+            if(respnse.user == null) {
+                console.log("User is null now creating account");
+                createNewUserFlow()
+            } else {
+                navigateToHome()
+            }
+        }catch(e) {
+            console.log("Got error when sign in " + e);
+            createNewUserFlow()
+        }
+    }
+
+    const createNewUserFlow = async () => {
+        try {
+            const response = await firebase.auth().createUserWithEmailAndPassword(email,password);
+            if(response == null) {
+                alert("Something went wrong. Try again later");
+            } else {
+                navigateToHome()
+            }
+        } catch(e) {
+            console.log("Error creating new user in firebase " + e)
+        }
+    }
+
+    const navigateToHome = () => {
+        router.replace("../(home)");
     }
   return (
     <View style={styles.container}>
