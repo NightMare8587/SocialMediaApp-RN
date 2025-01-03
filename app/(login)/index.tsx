@@ -51,7 +51,7 @@ export default function index() {
                 navigateToHome()
             }
         } catch(e) {
-            console.log("Error creating new user in firebase " + e)
+            console.log("Error creating new user in firebase " + e);
         }
     }
 
